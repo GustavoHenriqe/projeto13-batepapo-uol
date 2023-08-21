@@ -24,8 +24,8 @@ async function connectToDatabase() {
 
 const db = mongoClient.db();
 
-const validateSchema = (schema, data) => {
-    const result = schema.validate(data);
+const validateSchema = async (schema, data) => {
+    const result = await schema.validate(data);
     if (result.error) {
         return true
     }
@@ -41,7 +41,7 @@ app.post("/participants", async (req, res) => {
 
     const validationErrors = validateSchema(schema, req.body);
 
-    if (validationErrors) {
+    if (!validationErrors) {
         return res.status(422).send(validationErrors);
     }
 
@@ -94,7 +94,7 @@ app.post("/messages", async (req, res) => {
         type: joi.string().required()
     });
 
-    const validationErrors = validateSchema(schema, req.body);
+    const validationErrors = await validateSchema(schema, req.body);
 
     if ( type !== "message" || type !== "private_message" ) {
         return res.sendStatus(422)
@@ -104,16 +104,18 @@ app.post("/messages", async (req, res) => {
         return res.sendStatus(422)
     }
 
-    if (validationErrors) {
+    if ( validationErrors ) {
         return res.sendStatus(422)
     }
 
     try {
         const sender = await db.collection("participants").findOne({ user });
 
-        if (!sender) {
+        if (sender === null) {
             return res.sendStatus(422);
         }
+
+        res.sendStatus(201);
 
         await db.collection("messages").insertOne({
             from: user,
@@ -122,8 +124,6 @@ app.post("/messages", async (req, res) => {
             type,
             time: dayjs().format("HH:mm:ss")
         });
-
-        return res.sendStatus(201);
 
     } catch (err) {
         console.error(err);
