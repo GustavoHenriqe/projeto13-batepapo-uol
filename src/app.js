@@ -39,14 +39,14 @@ app.post("/participants", async (req, res) => {
     const validationErrors = validateData(schema, req.body);
 
     if (validationErrors) {
-        return res.status(409).send(validationErrors);
+        return res.status(422).send(validationErrors);
     }
 
     try {
         const existingParticipant = await getParticipantByName(name);
 
         if (existingParticipant) {
-            return res.sendStatus(422);
+            return res.sendStatus(409);
         }
 
         await insertParticipant(name);
