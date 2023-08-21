@@ -106,7 +106,7 @@ app.post("/messages", async (req, res) => {
         const sender = await db.collection("participants").findOne({ name });
 
         if (!sender) {
-            return res.sendStatus(403);
+            return res.sendStatus(422);
         }
 
         await db.collection("messages").insertOne({
