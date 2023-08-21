@@ -94,7 +94,7 @@ app.post("/messages", async (req, res) => {
         type: joi.string().required()
     });
 
-    const validationErrors = await validateSchema(schema, req.body);
+    const validationErrors = schema.validate(req.body)
 
     if ( type !== "message" || type !== "private_message" ) {
         return res.sendStatus(422)
