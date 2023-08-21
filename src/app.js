@@ -27,9 +27,9 @@ const db = mongoClient.db();
 const validateSchema = (schema, data) => {
     const result = schema.validate(data);
     if (result.error) {
-        return result.error.details.map(e => e.message);
+        return true
     }
-    return null;
+    return false;
 };
 
 app.post("/participants", async (req, res) => {
