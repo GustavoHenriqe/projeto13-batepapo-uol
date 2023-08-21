@@ -97,15 +97,15 @@ app.post("/messages", async (req, res) => {
     const validationErrors = validateSchema(schema, req.body);
 
     if ( type !== "message" || type !== "private_message" ) {
-        return res.status(422)
+        return res.sendStatus(422)
     }
 
     if ( !user ) {
-        return res.status(422)
+        return res.sendStatus(422)
     }
 
     if (validationErrors) {
-        return res.status(422)
+        return res.sendStatus(422)
     }
 
     try {
@@ -116,7 +116,7 @@ app.post("/messages", async (req, res) => {
         }
 
         await db.collection("messages").insertOne({
-            from: name,
+            from: user,
             to,
             text,
             type,
